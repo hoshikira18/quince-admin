@@ -2,7 +2,7 @@
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {Badge} from "@/components/ui/badge"
 import {useAdminProducts} from "medusa-react";
-import {formatDate} from "@/utils";
+import {formatDate} from "@/lib/utils";
 import ItemOptions from "@/components/common/item-options";
 import Link from "next/link";
 
@@ -43,7 +43,8 @@ const ProductTable = () => {
                     <TableCell>
                         <Link href={`/products/${product.id}`}>{product.title}</Link>
                     </TableCell>
-                    <TableCell><Badge variant="outline">{product.status}</Badge></TableCell>
+                    <TableCell><Badge
+                        variant={`${product.status === "published" ? "done" : "cancel"}`}>{product.status}</Badge></TableCell>
                     <TableCell>{new Intl.NumberFormat().format(product?.variants[0]?.prices[0]?.amount) || "-"}</TableCell>
                     <TableCell>{
                         product.categories.map((category, index) => {

@@ -34,6 +34,21 @@ const navItem = [
         title: "Danh mục",
         icon: Package2,
         path: "/categories",
+    },
+    {
+        title: "Vùng",
+        icon: Package2,
+        path: "/regions",
+    },
+    {
+        title: "Phương thức giao hàng",
+        icon: Package2,
+        path: "/shipping-options",
+    },
+    {
+        title: "Quản lý cửa hàng",
+        icon: Package2,
+        path: "/store",
     }
 ]
 

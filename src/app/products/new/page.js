@@ -1,5 +1,4 @@
 "use client"
-import {useState} from "react";
 import {useRouter} from 'next/navigation'
 import {useAdminCreateProduct} from "medusa-react";
 import Layout from "@/components/layout/layout";
@@ -13,13 +12,16 @@ import CategoriesSelection from "@/components/products/new/categories-selection"
 import Variant from "@/components/products/new/variants";
 import {useToast} from "@/components/ui/use-toast";
 import {Button} from "@mantine/core";
+import UploadImage from "@/components/collections/upload-image";
+import {useState} from "react";
+import {uploadFiles} from "@/lib/data";
 
 const NewProduct = () => {
     const {toast} = useToast()
     const router = useRouter()
-    const [data, setData] = useState({})
+    const [images, setImages] = useState([])
+    const [thumbnail, setThumbnail] = useState([])
     const createProduct = useAdminCreateProduct()
-
     const form = useForm({
         defaultValues: createBlank()
     })
@@ -35,9 +37,36 @@ const NewProduct = () => {
         })
     }
 
+    const createPayload = async (data) => {
+        return {
+            title: data.title,
+            subtitle: data.subtitle,
+            description: data.description,
+            handle: data.handle,
+            thumbnail: await uploadFiles(thumbnail).then((url) => url[0]),
+            images: await uploadFiles(images).then((url) => url),
+            status: data.status,
+            is_giftcard: data.is_giftcard,
+            discountable: data.discountable,
+            options: data.options.map((o) => ({
+                title: o.title,
+            })),
+            variants: data.variants.map((v) => ({
+                title: v.title,
+                inventory_quantity: parseInt(String(v.inventory_quantity)),
+                prices: v.prices.map((p) => ({
+                    amount: parseInt(String(p.amount)), currency_code: p.currency_code,
+                })),
+                options: v.options,
+            })),
+            collection_id: data.collection_id,
+            categories: data.categories,
+        }
+    }
+
     return <Layout>
-        <form onSubmit={form.handleSubmit((data) => {
-            handleCreate(createPayload(data))
+        <form onSubmit={form.handleSubmit(async (data) => {
+            handleCreate(await createPayload(data))
         })}>
             <Card className={`px-10`}>
                 <CardHeader>
@@ -70,9 +99,12 @@ const NewProduct = () => {
                         </div>
                     </div>
                     <div className={`mt-5 transition-all duration-500`}>
-                        <Label htmlFor="thumbnail">Ảnh đại diện</Label>
-                        <Input type="file"
-                               className={`w-full transition-all duration-500`} {...form.register("thumbnail")} />
+                        <Label htmlFor="thumbnail">Ảnh đại diện sản phẩm</Label>
+                        <UploadImage images={thumbnail} setImages={setThumbnail}/>
+                    </div>
+                    <div className={`mt-5 transition-all duration-500`}>
+                        <Label htmlFor="thumbnail">Ảnh chi tiết sản phẩm</Label>
+                        <UploadImage images={images} setImages={setImages} isMultiple={true}/>
                     </div>
                 </CardContent>
             </Card>
@@ -95,7 +127,8 @@ const createBlank = () => {
         subtitle: "",
         description: "",
         handle: "",
-        images: ["https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png"],
+        thumbnail: "",
+        images: [],
         status: "published",
         is_giftcard: true,
         discountable: true,
@@ -106,29 +139,6 @@ const createBlank = () => {
     }
 }
 
-
-const createPayload = (data) => {
-    return {
-        title: data.title,
-        subtitle: data.subtitle,
-        description: data.description,
-        handle: data.handle,
-        images: data.images,
-        status: data.status,
-        is_giftcard: data.is_giftcard,
-        discountable: data.discountable,
-        options: data.options.map((o) => ({
-            title: o.title,
-        })),
-        variants: data.variants.map((v) => ({
-            title: v.title, inventory_quantity: parseInt(String(v.inventory_quantity)), prices: v.prices.map((p) => ({
-                amount: parseInt(String(p.amount)), currency_code: p.currency_code,
-            })), options: v.options,
-        })),
-        collection_id: data.collection_id,
-        categories: data.categories,
-    }
-}
 
 export default NewProduct;
 

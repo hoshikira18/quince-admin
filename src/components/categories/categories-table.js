@@ -1,8 +1,7 @@
 "use client";
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
-import {Badge} from "@/components/ui/badge"
 import {useAdminProductCategories} from "medusa-react";
-import {formatDate} from "@/utils";
+import {formatDate} from "@/lib/utils"
 import ItemOptions from "@/components/common/item-options";
 import Link from "next/link";
 

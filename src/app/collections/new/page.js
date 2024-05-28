@@ -11,6 +11,7 @@ import {useRouter} from "next/navigation";
 import {Button} from "@mantine/core";
 import UploadImage from "@/components/collections/upload-image";
 import {useState} from "react";
+import {uploadFiles} from "@/lib/data";
 
 const NewCollections = () => {
     const { toast } = useToast()
@@ -33,10 +34,21 @@ const NewCollections = () => {
         })
     }
 
+    const createPayload = async (data) => {
+        return {
+            title: data.title,
+            handle: data.handle,
+            metadata: {
+                description: data.metadata.description,
+                image_url: await uploadFiles(images).then((urls) => urls[0] || ""),
+            }
+        }
+    }
+
     return (
         <Layout>
-            <form onSubmit={form.handleSubmit(data => {
-                handleCreate(data)
+            <form onSubmit={form.handleSubmit(async data => {
+                handleCreate(await createPayload(data))
             })}>
                 <Card className={`px-10`}>
                     <CardHeader>
@@ -76,7 +88,7 @@ const createBlank = () => {
         title: "",
         handle: "",
         metadata: {
-            image_url: "https://theme.hstatic.net/1000226014/1001131491/14/collection_banner.jpg?v=2090",
+            image_url: "",
             description: "",
         },
     }
