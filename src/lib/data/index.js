@@ -18,3 +18,22 @@ export const uploadFiles = async (files) => {
     );
     return urls;
 };
+
+export const getProducts = async function ({limit, offset = 0}) {
+    const {products, count} = await medusaClient.admin.products
+        .list(
+            {
+                limit,
+                offset,
+            },
+        )
+        .then(res => res)
+        .catch(error => {
+            console.error(error);
+            return {
+                products: [],
+                count: 0,
+            };
+        });
+    return {products, count};
+};

@@ -1,10 +1,5 @@
 "use client"
-import {
-    Package,
-    Package2,
-    Home,
-    ShoppingCart
-} from 'lucide-react';
+import {Home, Package, Package2, ShoppingCart} from 'lucide-react';
 import {usePathname} from "next/navigation";
 import Link from "next/link";
 import {memo} from "react";
@@ -49,6 +44,11 @@ const navItem = [
         title: "Quản lý cửa hàng",
         icon: Package2,
         path: "/store",
+    },
+    {
+        title: "Tài khoản",
+        icon: Package2,
+        path: "/account",
     }
 ]
 
@@ -69,7 +69,7 @@ const Navigation = () => {
                         const Icon = item.icon;
                         return (
                             <Link href={item.path} key={index}
-                                 className={`${pathname.includes(item.path) ? "bg-[#f4f4f5]" : ""} group flex items-center space-x-2 py-2 px-3 text-sm text-primary cursor-pointer rounded-lg`}>
+                                  className={`${pathname.includes(item.path) ? "bg-[#f4f4f5]" : ""} group flex items-center space-x-2 py-2 px-3 text-sm text-primary cursor-pointer rounded-lg`}>
                                 <Icon className="h-4 w-4 group-hover:scale-125 transition-all duration-300"/>
                                 <h1 className={`transition-all duration-300 group-hover:text-base`}>{item.title}</h1>
                             </Link>

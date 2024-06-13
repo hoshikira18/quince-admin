@@ -13,12 +13,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import UploadImage from "@/components/collections/upload-image";
 import { uploadFiles } from "@/lib/data";
 import { useState } from "react";
+import Loading from "@/components/common/loading";
 
 const NewCategoriesPage = () => {
   const { toast } = useToast();
   const router = useRouter();
   const createCategory = useAdminCreateProductCategory();
-
+  const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
 
   const form = useForm({
@@ -28,6 +29,7 @@ const NewCategoriesPage = () => {
   const handleCreate = (data) => {
     createCategory.mutate(data, {
       onSuccess: ({ product_category }) => {
+        setLoading(false);
         toast({
           title: "Tạo bộ sưu tập thành công",
           description: product_category.id,
@@ -52,68 +54,73 @@ const NewCategoriesPage = () => {
 
   return (
     <Layout>
-      <form
-        onSubmit={form.handleSubmit(async (data) => {
-          handleCreate(await createPayload(data, images));
-        })}
-      >
-        <Card className={`px-10`}>
-          <CardHeader>
-            <h1 className={`text-xl font-medium mb-2`}>Thêm danh mục</h1>
-            <p className={`text-sm text-[#717171]`}>
-              Thêm danh mục mới vào cửa hàng của bạn.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className={`mt-5 transition-all duration-500`}>
-              <Label htmlFor="title">Tên danh mục</Label>
-              <Input
-                type="text"
-                id={`name`}
-                className={`w-full transition-all duration-500`}
-                {...form.register("name", { required: true })}
-              />
-            </div>
-            <div className={`mt-5 transition-all duration-500`}>
-              <Label htmlFor="handle">Đường dẫn</Label>
-              <Input
-                id={`handle`}
-                className={`w-full transition-all duration-500`}
-                {...form.register("handle")}
-              />
-            </div>
-            <div className={`relative z-20 mt-5 transition-all duration-500`}>
-              <Label htmlFor="description">Mô tả</Label>
-              <Richtext form={form} formValue={"description"} />
-            </div>
-            <UploadImage images={images} setImages={setImages} />
-            <div
-              className={`mt-5 transition-all duration-500 flex items-center space-x-2`}
-            >
-              <Checkbox
-                onCheckedChange={(value) => {
-                  form.setValue("metadata.main_display", value);
-                }}
-              />
-              <Label htmlFor="main_display">
-                Hiển thị danh mục này ở trang chủ
-              </Label>
-            </div>
-            <div className={`mt-5`}>
-              <Button
-                type={"submit"}
-                variant={"filled"}
-                color={"black"}
-                fullWidth={true}
-                size={"md"}
-                className={`text-sm w-full transition-all duration-500`}
+      {loading ? (
+        <Loading />
+      ) : (
+        <form
+          onSubmit={form.handleSubmit(async (data) => {
+            setLoading(true);
+            handleCreate(await createPayload(data, images));
+          })}
+        >
+          <Card className={`px-10`}>
+            <CardHeader>
+              <h1 className={`text-xl font-medium mb-2`}>Thêm danh mục</h1>
+              <p className={`text-sm text-[#717171]`}>
+                Thêm danh mục mới vào cửa hàng của bạn.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className={`mt-5 transition-all duration-500`}>
+                <Label htmlFor="title">Tên danh mục</Label>
+                <Input
+                  type="text"
+                  id={`name`}
+                  className={`w-full transition-all duration-500`}
+                  {...form.register("name", { required: true })}
+                />
+              </div>
+              <div className={`mt-5 transition-all duration-500`}>
+                <Label htmlFor="handle">Đường dẫn</Label>
+                <Input
+                  id={`handle`}
+                  className={`w-full transition-all duration-500`}
+                  {...form.register("handle")}
+                />
+              </div>
+              <div className={`relative z-20 mt-5 transition-all duration-500`}>
+                <Label htmlFor="description">Mô tả</Label>
+                <Richtext form={form} formValue={"description"} />
+              </div>
+              <UploadImage images={images} setImages={setImages} />
+              <div
+                className={`mt-5 transition-all duration-500 flex items-center space-x-2`}
               >
-                Thêm danh mục
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </form>
+                <Checkbox
+                  onCheckedChange={(value) => {
+                    form.setValue("metadata.main_display", value);
+                  }}
+                />
+                <Label htmlFor="main_display">
+                  Hiển thị danh mục này ở trang chủ
+                </Label>
+              </div>
+              <div className={`mt-5`}>
+                <Button
+                  type={"submit"}
+                  variant={"filled"}
+                  color={"black"}
+                  fullWidth={true}
+                  size={"md"}
+                  className={`text-sm w-full transition-all duration-500`}
+                >
+                  Thêm danh mục
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </form>
+      )}
     </Layout>
   );
 };
