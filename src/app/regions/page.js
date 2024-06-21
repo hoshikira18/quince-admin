@@ -6,6 +6,7 @@ import {
   useAdminCreateShippingOption,
   useAdminCurrencies,
   useAdminRegions,
+  useAdminCreateRegion,
   useAdminShippingOptions,
 } from "medusa-react";
 import {
@@ -42,7 +43,8 @@ import { formatDate } from "@/lib/utils";
 const Regions = ({ children }) => {
   const { regions, isLoading } = useAdminRegions();
 
-  const createShippingOption = useAdminCreateShippingOption();
+  const createRegion = useAdminCreateRegion();
+
   const form = useForm({
     defaultValues: {
       name: "",
@@ -58,26 +60,16 @@ const Regions = ({ children }) => {
       name: form.getValues("name"),
       currency_code: "vnd",
       tax_rate: 0,
-      fulfillment_providers: [
-        {
-          id: "manual",
-          is_installed: true,
-        },
-      ],
-      payment_providers: [
-        {
-          id: "manual",
-          is_installed: true,
-        },
-      ],
+      fulfillment_providers: ["manual"],
+      payment_providers: ["manual"],
       countries: ["VN"],
     };
   };
 
-  const handleCreate = (data) => {
-    createShippingOption.mutate(data, {
-      onSuccess: ({ shipping_option }) => {
-        console.log(shipping_option.id);
+  const handleCreate = (regionData) => {
+    createRegion.mutate(regionData, {
+      onSuccess: ({ region }) => {
+        console.log(region.id);
       },
     });
   };
